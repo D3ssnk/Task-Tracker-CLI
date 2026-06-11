@@ -7,6 +7,11 @@ class TaskManager():
             with open(json_file, "w") as file:
                 file.write('[]')
         self.json_file = json_file
+    
+    def get_file(self):
+        with open(self.json_file, "r") as file:
+            json_data = json.load(file)
+        return json_data
 
     def add(self, description):
         with open(self.json_file, "r+") as file:
