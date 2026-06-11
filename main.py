@@ -16,6 +16,9 @@ class TaskManager():
             json_data.append(task) # appends the task to the json list
             file.seek(0) # sets the cursor to the start so you can rewrite the entire file 
             json.dump(json_data,file) # writes the data back into the file 
+    
+    def delete(self, id):
+        return 0
 
 
 def main():
