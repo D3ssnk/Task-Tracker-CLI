@@ -8,11 +8,11 @@ class TaskManager():
                 file.write('[]')
         self.json_file = json_file
 
-    def add(self, task_description):
+    def add(self, description):
         with open(self.json_file, "r+") as file:
             json_data = json.load(file)
             task_id = len(json_data) + 1
-            task = {"id": task_id, "description": task_description, "status": "todo"}
+            task = {"id": task_id, "description": description, "status": "todo"}
             
             json_data.append(task) # appends the task to the json list
             file.seek(0) # sets the cursor to the start so you can rewrite the entire file 
@@ -33,6 +33,18 @@ class TaskManager():
         with open(self.json_file, "w") as file:
             json.dump(json_data, file)
 
+    def update(self, id, description):
+        with open(self.json_file, "r") as file:
+            json_data = json.load(file)
+        
+        if json_data == [] or id > len(json_data):
+            raise TaskNotFound()
+        
+        task_index = id - 1 
+        json_data[task_index]["description"] = description
+
+        with open(self.json_file, "w") as file:
+            json.dump(json_data, file)
             
 
 def main():
