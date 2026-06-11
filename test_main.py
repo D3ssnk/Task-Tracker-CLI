@@ -3,6 +3,12 @@ import json
 import pytest
 import os
 
+
+@pytest.fixture
+def test_task_manager(test_json_file):
+    return TaskManager(test_json_file)
+
+
 @pytest.fixture
 def test_json_file():
     if not os.path.exists("test_json.json") or os.path.getsize("test_json.json") != 0:
@@ -14,9 +20,7 @@ def test_json_file():
         os.remove("test_json.json")
     
 
-@pytest.fixture
-def test_task_manager(test_json_file):
-    return TaskManager(test_json_file)
+
 
 def test_add(test_task_manager, test_json_file):
     test_tasks = [{'id': 1, 'description': 'Make Coffee'}]

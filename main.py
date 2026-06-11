@@ -1,7 +1,7 @@
 import os
 import json
 class TaskManager():
-    def __init__(self,json_file):
+    def __init__(self,json_file = "tasks.json"):
         if not os.path.exists(json_file) or os.path.getsize(json_file) == 0:
             with open(json_file, "w") as file:
                 file.write('[]')
