@@ -61,7 +61,9 @@ class TaskManager():
 
         with open(self.json_file, "w") as file:
             json.dump(json_data, file)
-            
+
+    def list_tasks(self, status = None):
+        return 0            
 
 def main():
     return 0

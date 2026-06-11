@@ -141,9 +141,37 @@ def test_mark(test_task_manager, test_json_file):
         test_task_manager.update(4, "done")
 
     # test that when you try to update a task with no tasks inside the file it throws an exception
-    with open("test_json.json","w") as file:
+    with open(test_json_file,"w") as file:
             file.write('[]')
     with pytest.raises(TaskNotFound, match = "This task does not exist" ):
         test_task_manager.update(4, "todo")
         test_task_manager.update(4, "in-progress")
         test_task_manager.update(4, "done")
+
+def test_list_tasks(test_task_manager, test_json_file):
+    # test that when the file is full it works as normal
+    assert test_task_manager.list_tasks() == "id:1\ndescription: Make Coffee\nstatus: todo\n\nid:2\ndescription: Make Tea\nstatus: in-progress\n\nid:3\ndescription: Make Soup\nstatus: done"
+    assert test_task_manager.list_tasks("todo") == "id:1\ndescription: Make Coffee\nstatus: todo"
+    assert test_task_manager.list_tasks("in-progress") == "id:2\ndescription: Make Tea\nstatus: in-progress"
+    assert test_task_manager.list_tasks("done") == "id:3\ndescription: Make Soup\nstatus: done"
+
+
+    # test that it doesn't list tasks of different status when the status called is empty
+    with open(test_json_file,"w") as file:
+            file.write("[{'id': 1, 'description': 'Make Coffee', 'status': 'todo'}, {'id': 2, 'description': 'Make Tea', 'status': 'in-progress'}, {'id': 3, 'description': 'Make Soup', 'status': 'done'}]")
+   
+    with open(test_json_file,"w") as file:
+            file.write("[{'id': 2, 'description': 'Make Tea', 'status': 'in-progress'}, {'id': 3, 'description': 'Make Soup', 'status': 'done'}]")
+    assert test_task_manager.list_tasks("todo") == "There are no tasks with status: todo!"
+
+    with open(test_json_file,"w") as file:
+        file.write("[{'id': 1, 'description': 'Make Coffee', 'status': 'todo'}, {'id': 3, 'description': 'Make Soup', 'status': 'done'}]")
+    assert test_task_manager.list_tasks("todo") == "There are no tasks with status: in-progress!"
+    
+    with open(test_json_file,"w") as file:
+        file.write("[{'id': 1, 'description': 'Make Coffee', 'status': 'todo'}, {'id': 2, 'description': 'Make Tea', 'status': 'in-progress'}]")
+    assert test_task_manager.list_tasks("todo") == "There are no tasks with status: done!"
+
+    with open(test_json_file, "w") as file:
+        file.write("[]")
+    assert test_task_manager.list_tasks() == "There are no tasks!"
