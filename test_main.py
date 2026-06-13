@@ -12,9 +12,8 @@ def test_task_manager():
 
 @pytest.fixture
 def test_empty_json_file():
-    if not os.path.exists("test_json.json") or os.path.getsize("test_json.json") != 0:
-        with open("test_json.json","w") as file:
-            file.write('[]')
+    with open("test_json.json","w") as file:
+        file.write('[]')
 
     yield "test_json.json"
     if os.path.exists("test_json.json"):
@@ -43,9 +42,8 @@ def test_add(test_task_manager, test_empty_json_file):
 @pytest.fixture
 def test_json_file():
     test_tasks = [{'id': 1, 'description': 'Make Coffee', "status": "todo"}, {'id': 2, 'description': 'Make Tea', "status": "in-progress"}, {'id': 3, 'description': 'Make Soup', "status": "done"}]
-    if not os.path.exists("test_json.json") or os.path.getsize("test_json.json") != 0:
-        with open("test_json.json","w") as file:
-            json.dump(test_tasks, file)
+    with open("test_json.json","w") as file:
+        json.dump(test_tasks, file)
 
     yield "test_json.json"
     if os.path.exists("test_json.json"):
@@ -129,24 +127,25 @@ def test_mark(test_task_manager, test_json_file):
     with open(test_json_file, "r") as file:
         json_data = json.load(file)
     assert json_data == [{'id': 1, 'description': 'Make Coffee', "status": "done"}, {'id': 2, 'description': 'Make Tea', "status": "todo"}, {'id': 3, 'description': 'Make Soup', "status": "in-progress"}], "Ensure task was marked in-progress and the rest remain the same"
-
-    # test that when you try to mark a task with the wrong id, it throws an exception (done)
-    with pytest.raises(TaskNotFound, match = "This task does not exist" ):
-        test_task_manager.update(4, "done")
     
     # test that when you try to mark a task with the wrong id, it throws an exception 
     with pytest.raises(TaskNotFound, match = "This task does not exist" ):
         test_task_manager.mark(4, "todo")
+    with pytest.raises(TaskNotFound, match = "This task does not exist" ):
         test_task_manager.mark(4, "in-progress")
+    with pytest.raises(TaskNotFound, match = "This task does not exist" ):
         test_task_manager.mark(4, "done")
 
     # test that when you try to update a task with no tasks inside the file it throws an exception
     with open(test_json_file,"w") as file:
             file.write('[]')
     with pytest.raises(TaskNotFound, match = "This task does not exist" ):
-        test_task_manager.mark(4, "todo")
-        test_task_manager.mark(4, "in-progress")
-        test_task_manager.mark(4, "done")
+        test_task_manager.mark(1, "todo")
+    with pytest.raises(TaskNotFound, match = "This task does not exist" ):
+        test_task_manager.mark(1, "in-progress")
+    with pytest.raises(TaskNotFound, match = "This task does not exist" ):
+        test_task_manager.mark(1, "done")
+    
 
 def test_list_tasks(test_task_manager, test_json_file):
     # test that when the file is full it works as normal
