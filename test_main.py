@@ -136,17 +136,17 @@ def test_mark(test_task_manager, test_json_file):
     
     # test that when you try to mark a task with the wrong id, it throws an exception 
     with pytest.raises(TaskNotFound, match = "This task does not exist" ):
-        test_task_manager.update(4, "todo")
-        test_task_manager.update(4, "in-progress")
-        test_task_manager.update(4, "done")
+        test_task_manager.mark(4, "todo")
+        test_task_manager.mark(4, "in-progress")
+        test_task_manager.mark(4, "done")
 
     # test that when you try to update a task with no tasks inside the file it throws an exception
     with open(test_json_file,"w") as file:
             file.write('[]')
     with pytest.raises(TaskNotFound, match = "This task does not exist" ):
-        test_task_manager.update(4, "todo")
-        test_task_manager.update(4, "in-progress")
-        test_task_manager.update(4, "done")
+        test_task_manager.mark(4, "todo")
+        test_task_manager.mark(4, "in-progress")
+        test_task_manager.mark(4, "done")
 
 def test_list_tasks(test_task_manager, test_json_file):
     # test that when the file is full it works as normal

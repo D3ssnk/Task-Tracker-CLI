@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 from exceptions import *
 class TaskManager():
     def __init__(self,json_file = "tasks.json"):
@@ -79,10 +80,113 @@ class TaskManager():
         
         return list_string.strip()
 
+def print_tasks_helper(task_manager):
+    print("\n=========Tasks=========\n")
+    print(task_manager.list_tasks())
 
 def main():
-    return 0
+    instructions = """
+    Welcome to the task tracker!
+    These are the instructions:
+    add: to add a task, type add followed by the task description
+    update: to update a task, type update followed by the task's id, followed by the new task description
+    delete: to delete a task, type delete followed by the task's id
+    mark-todo: to mark a task as todo, type mark-todo followed by the task's id
+    mark-in-progress: to mark a task as in-progress, type mark-in-progress followed by the task's id 
+    mark-don: to mark a task as done, type mark-done followed by the task's id
+    list: to list tasks, type list (you can also include either todo, in-progress, or done after to list those specific tasks) 
+    exit: to exit, type exit
+    help: to get the instructions again, type help
+"""
+    print(instructions)
+    task_manager = TaskManager()
+    while True:
+        user_input = input("> ").strip()
+        args = user_input.split(" ")
+
+        if len(args) == 0:
+            continue
+    
+        args[0] = args[0].lower()
+
+        if len(args) >= 2 and args[0] == "add":
+            task_description = " ".join(args[1:]).strip()
+            task_manager.add(task_description)
+            print(f"\ntask has been added")
+            print_tasks_helper(task_manager)
+
+        elif len(args) >= 3 and args[0] == "update" and args[1].isdigit():
+            try:
+                task_id = int(args[1])
+                task_description = " ".join(args[2:]).strip()
+                task_manager.update(task_id, task_description)
+                print(f"\ntask id: {task_id} has been updated")
+                print_tasks_helper(task_manager)
+
+            except TaskNotFound as e:
+                print(e)
+        
+        elif len(args) == 2 and args[0] == "delete" and args[1].isdigit():
+            try:
+                task_id = int(args[1])
+                task_manager.delete(task_id)
+                print(f"\ntask id: {task_id} has been deleted")
+                print_tasks_helper(task_manager)
+
+            except TaskNotFound as e:
+                print(e)
+        
+        elif len(args) == 2 and args[0] == "mark-todo" and args[1].isdigit():
+            try:
+                task_id = int(args[1])
+                task_manager.mark(task_id, "todo")
+                print(f"task id: {task_id} has been marked as todo")
+                print_tasks_helper(task_manager)
+
+            except TaskNotFound as e:
+                print(e)
+
+        elif len(args) == 2 and args[0] == "mark-in-progress" and args[1].isdigit():
+            try:
+                task_id = int(args[1])
+                task_manager.mark(task_id, "in-progress")
+                print(f"task id: {task_id} has been marked as in-progress")
+                print_tasks_helper(task_manager)
+
+            except TaskNotFound as e:
+                print(e)
+        
+        elif len(args) == 2 and args[0] == "mark-done" and args[1].isdigit():
+            try:
+                task_id = int(args[1])
+                task_manager.mark(task_id, "done")
+                print(f"task id: {task_id} has been marked as done")
+                print_tasks_helper(task_manager)
+            except TaskNotFound as e:
+                print(e)
+        
+        elif (len(args) == 1 or len(args) == 2)and args[0] == "list":
+            print("=========Tasks=========\n")
+            if len(args) == 1:
+                print(task_manager.list_tasks())
+                continue
+            
+            task_status = args[1]
+            if task_status in ["todo", "in-progress", "done"]:
+                print(task_manager.list_tasks(task_status))
+            else:
+                print("invalid command or format, please try again")
+            
+        elif args[0] == "exit":
+            sys.exit()
+        
+        elif args[0] == "help":
+            print(instructions)
+        
+        else: 
+            print("invalid command or format, please try again")
+
 
 if __name__ == "__main__":
     main()
-        
+    
